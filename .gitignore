@@ -1,5 +1,10 @@
 node_modules/
-__pycache__/
-.env
-.next/
+build/
 dist/
+.venv/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+.DS_Store
+graphify-out/

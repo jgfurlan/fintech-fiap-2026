@@ -1,0 +1,14 @@
+services:
+  core-api:
+    build: ./core-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - core-api/.env
+
+  ui-dashboard:
+    build: ./ui-dashboard
+    ports:
+      - "3000:80"
+    depends_on:
+      - core-api
