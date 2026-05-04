@@ -18,17 +18,23 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
       - uses: google-github-actions/setup-gcloud@v2
-      - uses: google-github-services/submit-steps-build@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Authorize Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+      - name: Build and Push Container
+        uses: docker/build-push-action@v5
         with:
-          working_directory: core-api
+          context: ./core-api
+          push: true
           tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/core-api:latest
-      - run: |
-          gcloud run deploy core-api \
-            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/core-api:latest \
-            --region ${{ env.REGION }} \
-            --platform managed \
-            --allow-unauthenticated \
-            --port 8000
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: core-api
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/core-api:latest
+          region: ${{ env.REGION }}
+          flags: "--allow-unauthenticated --port 8000"
 
   deploy-ui-dashboard:
     runs-on: ubuntu-latest
@@ -39,14 +45,20 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
       - uses: google-github-actions/setup-gcloud@v2
-      - uses: google-github-services/submit-steps-build@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Authorize Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+      - name: Build and Push Container
+        uses: docker/build-push-action@v5
         with:
-          working_directory: ui-dashboard
+          context: ./ui-dashboard
+          push: true
           tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest
-      - run: |
-          gcloud run deploy ui-dashboard \
-            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest \
-            --region ${{ env.REGION }} \
-            --platform managed \
-            --allow-unauthenticated \
-            --port 80
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ui-dashboard
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest
+          region: ${{ env.REGION }}
+          flags: "--allow-unauthenticated --port 80"
