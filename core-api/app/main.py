@@ -26,19 +26,45 @@ async def get_user(authorization: str = Header(None)):
     if not authorization:
         raise HTTPException(401, "Missing Authorization header")
     token = authorization.removeprefix("Bearer ")
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            f"{SUPABASE_URL}/auth/v1/user",
-            headers={"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {token}"},
-        )
-    if resp.status_code != 200:
-        raise HTTPException(401, "Invalid token")
-    return resp.json()
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                f"{SUPABASE_URL}/auth/v1/user",
+                headers={"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {token}"},
+                timeout=10.0,
+            )
+        if resp.status_code != 200:
+            raise HTTPException(401, f"Invalid token (Supabase returned {resp.status_code})")
+        return resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(401, f"Invalid token: {e.response.text}")
+    except httpx.RequestError as e:
+        raise HTTPException(502, f"Auth service unreachable: {e}")
 
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok"}
+    supabase_ok = False
+    error = None
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                f"{SUPABASE_URL}/auth/v1/health",
+                headers={"apikey": SUPABASE_ANON_KEY},
+                timeout=5.0,
+            )
+            supabase_ok = resp.status_code == 200
+    except Exception as e:
+        error = str(e)
+
+    return {
+        "status": "ok",
+        "supabase": {
+            "reachable": supabase_ok,
+            "error": error,
+            "url_configured": SUPABASE_URL != "http://placeholder",
+        },
+    }
 
 
 @app.get("/api")
