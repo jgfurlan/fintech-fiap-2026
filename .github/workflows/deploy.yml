@@ -34,7 +34,7 @@ jobs:
           service: core-api
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/core-api:latest
           region: ${{ env.REGION }}
-          flags: "--allow-unauthenticated --port 8080"
+          flags: "--allow-unauthenticated --port 8080 --set-env-vars SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}"
 
   deploy-ui-dashboard:
     runs-on: ubuntu-latest
@@ -61,4 +61,4 @@ jobs:
           service: ui-dashboard
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest
           region: ${{ env.REGION }}
-          flags: "--allow-unauthenticated --port 8080"
+          flags: "--allow-unauthenticated --port 8080 --set-env-vars SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}"

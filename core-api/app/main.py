@@ -8,8 +8,8 @@ load_dotenv()
 
 app = FastAPI(title="Fintech FIAP 2026 — Core API")
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_ANON_KEY = os.environ["SUPABASE_ANON_KEY"]
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "http://placeholder")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "placeholder")
 SUPABASE_REST_URL = f"{SUPABASE_URL}/rest/v1"
 
 
