@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 import os
@@ -7,6 +8,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(title="Fintech FIAP 2026 — Core API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "http://placeholder")
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "placeholder")
