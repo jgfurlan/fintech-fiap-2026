@@ -54,6 +54,10 @@ jobs:
         with:
           context: ./ui-dashboard
           push: true
+          build-args: |
+            REACT_APP_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            REACT_APP_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+            REACT_APP_API_URL=https://core-api-udv3puvsbq-uc.a.run.app
           tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2

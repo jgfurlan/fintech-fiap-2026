@@ -2,13 +2,27 @@ services:
   core-api:
     build: ./core-api
     ports:
-      - "8000:8000"
+      - "8080:8080"
     env_file:
       - core-api/.env
+    volumes:
+      - ./core-api/app:/app/app
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
   ui-dashboard:
-    build: ./ui-dashboard
+    build:
+      context: ./ui-dashboard
+      target: build
     ports:
-      - "3000:80"
+      - "3000:3000"
+    env_file:
+      - ui-dashboard/.env
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
+    volumes:
+      - ./ui-dashboard/src:/app/src
+      - ./ui-dashboard/public:/app/public
+    command: npm start
     depends_on:
       - core-api

@@ -3,6 +3,8 @@ import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import "./App.css";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [apiStatus, setApiStatus] = useState<string>("checking...");
@@ -28,7 +30,7 @@ function App() {
     const headers: Record<string, string> = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    fetch("/api/health", { headers })
+    fetch(`${API_URL}/api/health`, { headers })
       .then((res) => res.json())
       .then((data) => setApiStatus(data.status ?? "ok"))
       .catch(() => setApiStatus("unreachable"));
