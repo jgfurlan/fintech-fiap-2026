@@ -42,7 +42,9 @@ async def get_user(authorization: str = Header(None)):
         raise HTTPException(502, f"Auth service unreachable: {e}")
 
 
-@app.get("/api/health")
+from app.models.api import HealthResponse, RootResponse, UserResponse
+
+@app.get("/api/health", response_model=HealthResponse)
 async def health():
     supabase_ok = False
     error = None
@@ -57,21 +59,19 @@ async def health():
     except Exception as e:
         error = str(e)
 
-    return {
-        "status": "ok",
-        "supabase": {
+    return HealthResponse(
+        status="ok",
+        supabase={
             "reachable": supabase_ok,
             "error": error,
             "url_configured": SUPABASE_URL != "http://placeholder",
         },
-    }
+    )
 
-
-@app.get("/api")
+@app.get("/api", response_model=RootResponse)
 async def root():
-    return {"message": "Fintech FIAP 2026 Core API", "version": "0.1.0"}
+    return RootResponse(message="Fintech FIAP 2026 Core API", version="0.1.0")
 
-
-@app.get("/api/me")
+@app.get("/api/me", response_model=UserResponse)
 async def me(user: dict = Depends(get_user)):
-    return {"email": user.get("email"), "id": user.get("id")}
+    return UserResponse(email=user.get("email"), id=user.get("id"))
