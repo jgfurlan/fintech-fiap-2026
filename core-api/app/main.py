@@ -42,7 +42,7 @@ async def get_user(authorization: str = Header(None)):
         raise HTTPException(502, f"Auth service unreachable: {e}")
 
 
-from app.models.api import HealthResponse, RootResponse, UserResponse
+from .models.api import HealthResponse, RootResponse, SupabaseHealth, UserResponse
 
 @app.get("/api/health", response_model=HealthResponse)
 async def health():
@@ -61,11 +61,11 @@ async def health():
 
     return HealthResponse(
         status="ok",
-        supabase={
-            "reachable": supabase_ok,
-            "error": error,
-            "url_configured": SUPABASE_URL != "http://placeholder",
-        },
+        supabase=SupabaseHealth(
+            reachable=supabase_ok,
+            error=error,
+            url_configured=SUPABASE_URL != "http://placeholder",
+        ),
     )
 
 @app.get("/api", response_model=RootResponse)
