@@ -39,7 +39,7 @@ async def get_user(authorization: str = Header(None)):
     except httpx.HTTPStatusError as e:
         raise HTTPException(401, f"Invalid token: {e.response.text}")
     except httpx.RequestError as e:
-        raise HTTPException(502, f"Auth service unreachable: {e}")
+        raise HTTPException(401, f"Invalid token: auth service unreachable ({type(e).__name__})")
 
 
 from .models.api import HealthResponse, RootResponse, SupabaseHealth, UserResponse
