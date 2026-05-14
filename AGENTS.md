@@ -4,7 +4,7 @@ This project is a fintech full-stack monorepo deployed to Google Cloud Run.
 
 ## Phase 1 — Tracer Bullet (May-Jun)
 Validate pipeline end-to-end with a fast stack:
-- **Frontend:** Next.js (TypeScript) in `ui-dashboard/`
+- **Frontend:** React (TypeScript, CRA) in `ui-dashboard/` — Next.js planned for Phase 2/4 upgrade
 - **Backend:** FastAPI (Python) in `core-api/`
 - **Auth/DB:** Supabase
 - **Styling:** Rose-Pine theme + Tailwind CSS
@@ -28,9 +28,12 @@ Communicates with Spring Boot backend via HTTP/event bus.
 ├── .github/workflows/   # CI/CD
 ├── core-api/            # FastAPI (Phase 1 backend)
 ├── core-spring/         # Spring Boot (Phase 2, future)
-└── ui-dashboard/        # Next.js frontend
+└── ui-dashboard/        # React frontend
 ```
 
 ## Development
 - Run locally: `docker compose up`
 - After code changes, run `graphify update .` to keep knowledge graph current
+
+## Multi-Session Plan
+See `SESSIONS.md` for the detailed session-by-session plan.
