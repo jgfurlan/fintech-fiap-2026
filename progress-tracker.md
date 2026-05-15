@@ -5,8 +5,8 @@
 *Goal: Validate the FastAPI/React/Supabase pipeline end-to-end.*
 
 ## Active Implementation
-- **Current Task:** JGF-6 spec formalization + lint cleanup.
-- **Status:** JGF-6 spec created, lint fixed, `pytest-httpx` added, 8/8 tests pass.
+- **Current Task:** Ready for next feature queue item.
+- **Status:** JGF-6 formally spec'd, lint clean, 8/8 tests pass. Branch cleaned up.
 
 ## Completed Features
 - ✅ FastAPI Backend Skeleton (core-api).
@@ -42,12 +42,7 @@
 1. `[Frontend] Upgrade CRA to Next.js` (JGF-7)
 2. `[API] Add /api/transactions and /api/balance endpoints` (JGF-20)
 
-## Uncommitted Changes
-- `core-api/requirements.txt`: added `pytest-httpx>=0.30.0`
-- `core-api/app/main.py`: removed unused `BaseModel` import, moved model import to top
-- `core-api/tests/test_auth.py`: removed unused `httpx`/`os` imports
-- All core-api files: `ruff format` applied
-- `docs/specs/JGF-6-mock-get-user.md`: retroactive atomic spec created
+
 
 ## Session Restoration Point
 Agents resuming work should start by querying the `graphify` knowledge graph for the latest `Active Implementation` state.
