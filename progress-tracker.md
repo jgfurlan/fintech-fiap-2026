@@ -5,8 +5,8 @@
 *Goal: Validate the FastAPI/React/Supabase pipeline end-to-end.*
 
 ## Active Implementation
-- **Current Task:** Environment Refinement & Alignment.
-- **Status:** Documentation restructuring into Six-File Context Matrix.
+- **Current Task:** JGF-6 spec formalization + lint cleanup.
+- **Status:** JGF-6 spec created, lint fixed, `pytest-httpx` added, 8/8 tests pass.
 
 ## Completed Features
 - ✅ FastAPI Backend Skeleton (core-api).
@@ -16,7 +16,9 @@
 - ✅ Graphify Knowledge Graph Setup.
 - ✅ Research Integration (NotebookLM, Agentic AI papers).
 - ✅ [Arch] Link SupabaseHealth model to health() endpoint (JGF-5).
-- ✅ [Test] Mock get_user for /api/me success path (JGF-6).
+- ✅ [Test] Mock get_user for /api/me success path (JGF-6) — spec: `docs/specs/JGF-6-mock-get-user.md`.
+- ✅ [UX] Implement Anticipatory Banking patterns (JGF-9).
+- ✅ [Security] Unit tests for get_user Auth Dependency (JGF-8).
 
 ## Historical Decisions
 - **2026-05-14:** Keep CRA for Phase 1; defer Next.js to Phase 4.
@@ -33,11 +35,19 @@
 ## Project Updates
 - **2026-05-15:** Environment Refined. Knowledge graph synchronized. Linear project uploaded with architectural gap tracking.
 - **2026-05-15:** Architectural gap JGF-5 closed by Pi Agent.
-- **2026-05-15:** Testing gap JGF-6 closed by Gemini.
+- **2026-05-15:** UX paradigm JGF-9 implemented by Gemini.
+- **2026-05-15:** Security baseline JGF-8 established by Gemini.
 
 ## Feature Queue (Linear Issues)
-1. `[UX] Implement Anticipatory Banking patterns`
-2. `[Security] Unit tests for get_user Auth Dependency`
+1. `[Frontend] Upgrade CRA to Next.js` (JGF-7)
+2. `[API] Add /api/transactions and /api/balance endpoints` (JGF-20)
+
+## Uncommitted Changes
+- `core-api/requirements.txt`: added `pytest-httpx>=0.30.0`
+- `core-api/app/main.py`: removed unused `BaseModel` import, moved model import to top
+- `core-api/tests/test_auth.py`: removed unused `httpx`/`os` imports
+- All core-api files: `ruff format` applied
+- `docs/specs/JGF-6-mock-get-user.md`: retroactive atomic spec created
 
 ## Session Restoration Point
 Agents resuming work should start by querying the `graphify` knowledge graph for the latest `Active Implementation` state.
