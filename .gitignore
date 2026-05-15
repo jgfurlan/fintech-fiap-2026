@@ -8,3 +8,15 @@ __pycache__/
 *.egg-info/
 .DS_Store
 graphify-out/
+
+# Agent guidelines and local configuration
+.gemini/
+project-overview.md
+architecture.md
+code-standards.md
+ui-context.md
+ai-workflow-rules.md
+progress-tracker.md
+
+# Research and technical reports
+docs/research/
