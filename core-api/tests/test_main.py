@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from app.main import app
+from fastapi import HTTPException
+from app.main import app, get_user
 
 @pytest.mark.asyncio
 async def test_health_endpoint():
@@ -30,7 +31,27 @@ async def test_me_endpoint_no_auth():
 
 @pytest.mark.asyncio
 async def test_me_endpoint_invalid_token():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.get("/api/me", headers={"Authorization": "Bearer invalid_token"})
-    assert response.status_code == 401
-    assert "Invalid token" in response.json()["detail"]
+    async def override_get_user_invalid():
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    app.dependency_overrides[get_user] = override_get_user_invalid
+    try:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+            response = await ac.get("/api/me", headers={"Authorization": "Bearer invalid_token"})
+        assert response.status_code == 401
+        assert "Invalid token" in response.json()["detail"]
+    finally:
+        app.dependency_overrides.clear()
+@pytest.mark.asyncio
+async def test_me_endpoint_success():
+    async def override_get_user():
+        return {"id": "test_uuid", "email": "test@example.com"}
+
+    app.dependency_overrides[get_user] = override_get_user
+    try:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+            response = await ac.get("/api/me", headers={"Authorization": "Bearer valid_token"})
+        assert response.status_code == 200
+        assert response.json() == {"email": "test@example.com", "id": "test_uuid"}
+    finally:
+        app.dependency_overrides.clear()
