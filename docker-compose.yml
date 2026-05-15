@@ -6,7 +6,7 @@ services:
     env_file:
       - core-api/.env
     volumes:
-      - ./core-api/app:/app/app
+      - ./core-api/app:/app
     command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
   ui-dashboard:
