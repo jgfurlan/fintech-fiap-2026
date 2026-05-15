@@ -70,14 +70,33 @@ function App() {
       </div>
 
       {session ? (
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center">
           <p className="text-text mb-2">Logged in as {session.user.email}</p>
           <button
             onClick={handleLogout}
-            className="bg-love text-base px-4 py-2 rounded hover:opacity-80"
+            className="bg-love text-base px-4 py-2 rounded hover:opacity-80 mb-8"
           >
             Logout
           </button>
+
+          {/* Anticipatory Banking Widget */}
+          <div className="p-6 bg-surface border border-highlight-med rounded-lg max-w-md text-left shadow-xl">
+            <div className="flex items-center gap-2 mb-4">
+              <span role="img" aria-label="AI Sparkles">✨</span>
+              <h2 className="text-gold font-bold uppercase tracking-wider text-xs">AI Agentic Insight</h2>
+            </div>
+            <p className="text-text mb-6 leading-relaxed">
+              You are trending <span className="text-gold font-bold">15% over</span> your dining budget this month. 
+              Based on your current spending velocity, we suggest adjusting your weekend entertainment allocation to stay on track.
+            </p>
+            <button
+              className="w-full bg-foam text-surface font-bold py-3 px-4 rounded-md min-h-[44px] hover:opacity-90 transition-opacity shadow-sm"
+              aria-label="Adjust your budget based on AI suggestion"
+              onClick={() => alert("Anticipatory flow initiated: Recalculating budget... (Coming soon)")}
+            >
+              Adjust Budget Plan
+            </button>
+          </div>
         </div>
       ) : (
         <form
