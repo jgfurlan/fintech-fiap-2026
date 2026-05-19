@@ -21,3 +21,8 @@ class RootResponse(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: EmailStr
+
+
+class InsightResponse(BaseModel):
+    insight: str
+    action_label: str

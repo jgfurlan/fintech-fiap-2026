@@ -8,6 +8,11 @@ const API_URL = process.env.REACT_APP_API_URL || "";
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [apiStatus, setApiStatus] = useState<string>("checking...");
+  const [insight, setInsight] = useState<{
+    insight: string;
+    action_label: string;
+    threat_level: string;
+  } | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,6 +39,21 @@ function App() {
       .then((res) => res.json())
       .then((data) => setApiStatus(data.status ?? "ok"))
       .catch(() => setApiStatus("unreachable"));
+
+    if (token) {
+      fetch(`${API_URL}/api/agent/budget-insight`, { headers })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.action_items && data.action_items.length > 0) {
+            setInsight({
+              insight: data.action_items[0].action,
+              action_label: "Adjust Budget Plan",
+              threat_level: data.threat_level
+            });
+          }
+        })
+        .catch((err) => console.error("Error fetching insight:", err));
+    }
   }, [session]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -81,23 +101,24 @@ function App() {
           </button>
 
           {/* Anticipatory Banking Widget */}
-          <div className="p-6 bg-surface border border-highlight-med rounded-lg w-full text-left shadow-xl">
-            <div className="flex items-center gap-2 mb-4">
-              <span role="img" aria-label="AI Sparkles">✨</span>
-              <h2 className="text-gold font-bold uppercase tracking-wider text-xs">AI Agentic Insight</h2>
+          {insight && (
+            <div className="p-6 bg-surface border border-highlight-med rounded-lg w-full text-left shadow-xl">
+              <div className="flex items-center gap-2 mb-4">
+                <span role="img" aria-label="AI Sparkles">✨</span>
+                <h2 className="text-gold font-bold uppercase tracking-wider text-xs">AI Agentic Insight</h2>
+              </div>
+              <p className="text-text mb-6 leading-relaxed">
+                {insight.insight}
+              </p>
+              <button
+                className="w-full bg-foam text-surface font-bold py-3 px-4 rounded-md min-h-[44px] hover:opacity-90 transition-opacity shadow-sm focus:outline-none focus:ring-2 focus:ring-foam focus:ring-offset-2 focus:ring-offset-surface"
+                aria-label={insight.action_label}
+                onClick={() => alert(`Anticipatory flow initiated: ${insight.insight} (Coming soon)`)}
+              >
+                {insight.action_label}
+              </button>
             </div>
-            <p className="text-text mb-6 leading-relaxed">
-              You are trending <span className="text-gold font-bold">15% over</span> your dining budget this month. 
-              Based on your current spending velocity, we suggest adjusting your weekend entertainment allocation to stay on track.
-            </p>
-            <button
-              className="w-full bg-foam text-surface font-bold py-3 px-4 rounded-md min-h-[44px] hover:opacity-90 transition-opacity shadow-sm focus:outline-none focus:ring-2 focus:ring-foam focus:ring-offset-2 focus:ring-offset-surface"
-              aria-label="Adjust your budget based on AI suggestion"
-              onClick={() => alert("Anticipatory flow initiated: Recalculating budget... (Coming soon)")}
-            >
-              Adjust Budget Plan
-            </button>
-          </div>
+          )}
         </div>
       ) : (
         <form

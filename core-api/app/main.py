@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.models.api import HealthResponse, RootResponse, UserResponse
-
 import httpx
 import os
 from dotenv import load_dotenv
+
+from app.models.api import HealthResponse, RootResponse, UserResponse
 
 load_dotenv()
 
@@ -49,7 +49,7 @@ async def get_user(authorization: str = Header(None)):
         raise HTTPException(401, f"Invalid token: auth service unreachable ({type(e).__name__})")
 
 
-from app.models.api import HealthResponse, RootResponse, SupabaseHealth, UserResponse
+from app.models.api import HealthResponse, RootResponse, UserResponse, SupabaseHealth
 
 @app.get("/api/health", response_model=HealthResponse)
 async def health():
@@ -84,3 +84,8 @@ async def root():
 @app.get("/api/me", response_model=UserResponse)
 async def me(user: dict = Depends(get_user)):
     return UserResponse(email=user.get("email"), id=user.get("id"))
+
+
+from app.routers import agent as agent_router
+
+app.include_router(agent_router.router)

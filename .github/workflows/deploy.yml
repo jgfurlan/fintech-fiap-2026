@@ -1,68 +1,75 @@
-name: Deploy to Cloud Run
+name: Deploy to AWS App Runner
 
 on:
   push:
     branches: [main]
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: us-central1
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY_API: fintech/core-api
+  ECR_REPOSITORY_UI: fintech/ui-dashboard
 
 jobs:
   deploy-core-api:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: auth
-        uses: google-github-actions/auth@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-      - uses: google-github-actions/setup-gcloud@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Authorize Docker
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
-      - name: Build and Push Container
-        uses: docker/build-push-action@v5
-        with:
-          context: ./core-api
-          push: true
-          tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/core-api:latest
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: core-api
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/core-api:latest
-          region: ${{ env.REGION }}
-          flags: "--allow-unauthenticated --port 8080 --set-env-vars SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG ./core-api
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy to AWS App Runner
+        run: |
+          aws apprunner start-deployment --service-arn ${{ secrets.AWS_APP_RUNNER_API_ARN }}
 
   deploy-ui-dashboard:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: auth
-        uses: google-github-actions/auth@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-      - uses: google-github-actions/setup-gcloud@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Authorize Docker
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
-      - name: Build and Push Container
-        uses: docker/build-push-action@v5
-        with:
-          context: ./ui-dashboard
-          push: true
-          build-args: |
-            REACT_APP_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-            REACT_APP_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-            REACT_APP_API_URL=https://core-api-udv3puvsbq-uc.a.run.app
-          tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: ui-dashboard
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/fintech/ui-dashboard:latest
-          region: ${{ env.REGION }}
-          flags: "--allow-unauthenticated --port 8080 --set-env-vars SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_UI:$IMAGE_TAG \
+            --build-arg REACT_APP_SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --build-arg REACT_APP_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            --build-arg REACT_APP_API_URL=${{ secrets.AWS_API_URL }} \
+            ./ui-dashboard
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_UI:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_UI:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy to AWS App Runner
+        run: |
+          aws apprunner start-deployment --service-arn ${{ secrets.AWS_APP_RUNNER_UI_ARN }}
