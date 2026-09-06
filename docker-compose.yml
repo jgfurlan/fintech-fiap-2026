@@ -1,13 +1,24 @@
 services:
   core-api:
-    build: ./core-api
+    build: ./fintech-core-api
     ports:
       - "8080:8080"
+    environment:
+      - SUPABASE_URL=https://dsopgsosyhbhljitzntl.supabase.co
+      - SUPABASE_ANON_KEY=sb_publishable_B2NrgspOgr-RWh1QppC-4w_-6flBAjx
+      - AWS_REGION=us-east-1
+
+  core-api-python:
+    build: ./core-api
+    ports:
+      - "8081:8080"
     env_file:
       - core-api/.env
     volumes:
       - ./core-api/app:/app/app
     command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+    profiles:
+      - python
 
   ui-dashboard:
     build:

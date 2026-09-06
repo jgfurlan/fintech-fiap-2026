@@ -9,14 +9,17 @@ __pycache__/
 .DS_Store
 graphify-out/
 
-# Agent guidelines and local configuration
+# Agent guidelines and local configuration (deprecated in root)
 .gemini/
-project-overview.md
-architecture.md
-code-standards.md
-ui-context.md
-ai-workflow-rules.md
-progress-tracker.md
+/project-overview.md
+/architecture.md
+/code-standards.md
+/ui-context.md
+/ai-workflow-rules.md
+/progress-tracker.md
 
 # Research and technical reports
 docs/research/
+gha-creds-*.json
+target/
+.antigravitycli/
