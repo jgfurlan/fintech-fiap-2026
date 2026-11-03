@@ -1,7 +1,7 @@
 """Coordinator: orchestrates agentic analysis for budget velocity."""
 
 from fastapi import HTTPException, status
-from app.models.seed import SeedUserProfile, BudgetInsightResponse
+from app.models.seed import BudgetInsightResponse
 from app.data.seed_transactions import fintech_seed_data_get_user_profile
 from app.workers.budget_velocity_worker import fintech_worker_budget_velocity_insight
 from app.services.bedrock_service import BedrockInsightService

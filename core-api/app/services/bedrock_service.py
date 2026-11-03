@@ -35,16 +35,16 @@ class BedrockInsightService:
         Return the response ONLY as a JSON list of objects with keys: "action", "projected_savings", "reason".
         """
 
-        body = json.dumps({{
+        body = json.dumps({
             "anthropic_version": "bedrock-2023-05-31",
             "max_tokens": 500,
             "messages": [
-                {{
+                {
                     "role": "user",
                     "content": prompt
-                }}
+                }
             ]
-        }})
+        })
 
         try:
             response = self.client.invoke_model(

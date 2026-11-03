@@ -5,7 +5,7 @@ import httpx
 import os
 from dotenv import load_dotenv
 
-from app.models.api import HealthResponse, RootResponse, UserResponse
+from app.models.api import HealthResponse, RootResponse, UserResponse, SupabaseHealth
 
 load_dotenv()
 
@@ -48,9 +48,6 @@ async def get_user(authorization: str = Header(None)):
     except httpx.RequestError as e:
         raise HTTPException(401, f"Invalid token: auth service unreachable ({type(e).__name__})")
 
-
-from app.models.api import HealthResponse, RootResponse, UserResponse, SupabaseHealth
-
 @app.get("/api/health", response_model=HealthResponse)
 async def health():
     supabase_ok = False
@@ -86,6 +83,6 @@ async def me(user: dict = Depends(get_user)):
     return UserResponse(email=user.get("email"), id=user.get("id"))
 
 
-from app.routers import agent as agent_router
+from app.routers import agent as agent_router  # noqa: E402 (prevent circular import with get_user)
 
 app.include_router(agent_router.router)

@@ -1,6 +1,4 @@
-"""Budget Velocity Worker: pure math over transactions and budgets."""
-
-from datetime import date, datetime, timedelta
+from datetime import date
 from decimal import Decimal
 
 from app.models.seed import (
@@ -69,8 +67,6 @@ def fintech_worker_budget_velocity_insight(
     worst_deviation = Decimal("0")
     worst_deviation_pct = Decimal("0")
 
-    month_start = date(today.year, today.month, 1)
-
     for category, total_spent in spending.items():
         budget = budget_map.get(category)
         if budget is None:
@@ -95,7 +91,7 @@ def fintech_worker_budget_velocity_insight(
             deviation_pct=Decimal("0"),
             deviation_amount=Decimal("0"),
             threat_level=ThreatLevel.GOOD,
-            action_items=ActionItem(),
+            action_items=[],
         )
 
     # Determine threat level

@@ -1,9 +1,6 @@
-"""Pydantic models for agent data and seed data."""
-
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from enum import StrEnum
-from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -84,7 +81,7 @@ class BudgetInsightResponse(BaseModel):
     deviation_amount: Decimal
     threat_level: str  # ThreatLevel as string for JSON compat
     action_items: list[ActionItem] = Field(default_factory=list)
-    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     @model_validator(mode="after")
     def _round_monetary(self) -> "BudgetInsightResponse":

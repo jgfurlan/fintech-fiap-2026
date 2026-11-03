@@ -1,17 +1,12 @@
 """Seeded transaction and budget data for deterministic Tracer Bullet testing."""
 
+from datetime import date
 from decimal import Decimal
-from datetime import date, timedelta
-from collections import defaultdict
-from statistics import mean, stdev
 
 from app.models.seed import (
     Transaction,
     BudgetSetting,
     SeedUserProfile,
-    ThreatLevel,
-    BudgetInsightResponse,
-    ActionItem,
 )
 
 

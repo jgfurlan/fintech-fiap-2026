@@ -3,7 +3,11 @@ import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import "./App.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.REACT_APP_API_URL ||
+  (typeof process !== "undefined" ? process.env?.REACT_APP_API_URL : "") ||
+  "";
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);

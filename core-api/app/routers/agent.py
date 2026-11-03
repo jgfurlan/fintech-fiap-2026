@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 
 from app.main import get_user
 from app.coordinator import fintech_agent_coordinator_analyze_budget
